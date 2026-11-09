@@ -15,7 +15,7 @@
 <div align="center">
   <h2>
     An open source virtual hand-drawn style whiteboard. </br>
-    Collaborative and end-to-end encrypted. </br>
+    This fork runs as an offline desktop app. </br>
   <br />
   </h2>
 </div>
@@ -68,17 +68,59 @@ The Excalidraw editor (npm package) supports:
 - 🔙&nbsp;Undo / Redo.
 - 🔍&nbsp;Zoom and panning support.
 
-## Excalidraw.com
+## Desktop app (this fork)
 
-The app hosted at [excalidraw.com](https://excalidraw.com) is a minimal showcase of what you can build with Excalidraw. Its [source code](https://github.com/excalidraw/excalidraw/tree/master/excalidraw-app) is part of this repository as well, and the app features:
+This repository is a fork of [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) that turns the `excalidraw-app` web app into a **fully offline desktop app** built with [Tauri v2](https://tauri.app). The editor itself (`packages/*`) is unchanged.
 
-- 📡&nbsp;PWA support (works offline).
-- 🤼&nbsp;Real-time collaboration.
-- 🔒&nbsp;End-to-end encryption.
-- 💾&nbsp;Local-first support (autosaves to the browser).
-- 🔗&nbsp;Shareable links (export to a readonly link you can share with others).
+### What changed
 
-We'll be adding these features as drop-in plugins for the npm package in the future.
+The web app's online features were removed, so the app makes no network requests:
+
+- 🚫&nbsp;Live collaboration (socket.io), rooms and the Firebase backend.
+- 🚫&nbsp;Shareable links (export to / import from a backend).
+- 🚫&nbsp;AI text-to-diagram and diagram-to-code. The offline **Mermaid → Excalidraw** import is kept.
+- 🚫&nbsp;Excalidraw+ promos, sign-in links, export and sidebar tabs.
+- 🚫&nbsp;Sentry error reporting and analytics.
+- 🚫&nbsp;PWA / service worker (not needed in a desktop shell).
+- 🚫&nbsp;GitHub, Follow us and Discord chat items in the main menu.
+
+What you get instead:
+
+- 📦&nbsp;Tauri shell in [`src-tauri/`](./src-tauri) (macOS first, other platforms are a config change away).
+- 🔒&nbsp;A strict Content-Security-Policy (`connect-src 'self'`), so the packaged app cannot reach the network.
+- 🔤&nbsp;A `desktop` Vite mode ([`.env.desktop`](./.env.desktop)) that bundles all fonts locally instead of loading them from a CDN.
+- 💾&nbsp;Local-first persistence (IndexedDB / localStorage), as before.
+
+Still online-only and not yet removed: the library "Browse libraries" / "Publish library" buttons in `packages/excalidraw`. They are blocked by the CSP.
+
+### Prerequisites
+
+- Node.js >= 18 and Yarn 1 (`yarn@1.22`).
+- Rust, installed via [rustup](https://rustup.rs).
+- Xcode Command Line Tools (macOS).
+
+### Run and build
+
+```bash
+yarn                 # install dependencies
+yarn desktop:dev     # run in a native window with hot reload (Vite on :3001)
+yarn desktop:build   # production build -> src-tauri/target/release/bundle/
+```
+
+Use `yarn desktop:build --bundles app` to build only the `.app` and skip the `.dmg`.
+
+Unsigned builds trigger a Gatekeeper warning on other Macs; right-click the app and choose **Open**. Signing and notarization (Apple Developer account) is not set up yet.
+
+### Roadmap
+
+- [ ] Native Open / Save dialogs and `.excalidraw` file association handling.
+- [ ] Open external links in the default browser.
+- [ ] Native menu and an unsaved-changes prompt on quit.
+- [ ] Code signing, notarization and auto-update.
+
+### Web build
+
+The browser build still works for development (`yarn start`), but it is now offline-only too. Note that `yarn start` no longer opens a browser automatically and fails if port 3001 is taken.
 
 ## Quick start
 
