@@ -1,0 +1,72 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Excalidraw",
+  "version": "0.1.0",
+  "identifier": "com.excalidraw.desktop",
+  "build": {
+    "frontendDist": "../excalidraw-app/build",
+    "devUrl": "http://localhost:3001",
+    "beforeDevCommand": "yarn --cwd excalidraw-app vite",
+    "beforeBuildCommand": "yarn --cwd excalidraw-app vite build --mode desktop"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Excalidraw",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 640,
+        "minHeight": 480,
+        "resizable": true,
+        "fullscreen": false,
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self' 'wasm-unsafe-eval'",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data: blob:",
+        "font-src": "'self' data:",
+        "connect-src": "'self' ipc: http://ipc.localhost data: blob:",
+        "worker-src": "'self' blob:",
+        "object-src": "'none'",
+        "base-uri": "'self'",
+        "form-action": "'none'"
+      },
+      "devCsp": {
+        "default-src": "'self'",
+        "script-src": "'self' 'unsafe-inline' 'wasm-unsafe-eval' http://localhost:3001",
+        "style-src": "'self' 'unsafe-inline' http://localhost:3001",
+        "img-src": "'self' data: blob: http://localhost:3001",
+        "font-src": "'self' data: http://localhost:3001",
+        "connect-src": "'self' ipc: http://ipc.localhost data: blob: http://localhost:3001 ws://localhost:3001",
+        "worker-src": "'self' blob:",
+        "object-src": "'none'"
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "category": "Graphics and Design",
+    "shortDescription": "Offline Excalidraw whiteboard",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["excalidraw"],
+        "mimeType": "application/vnd.excalidraw+json",
+        "name": "Excalidraw Drawing",
+        "description": "Excalidraw drawing",
+        "role": "Editor"
+      }
+    ]
+  }
+}
